@@ -634,4 +634,7 @@ class UsimDataDownloadCommands extends BaseCommands {
     public void unSetOnCatSendSmsResult(Handler h) {
     }
 
+    @Override
+    public void getDataCallProfile(int appType, Message result) {
+    }
 }

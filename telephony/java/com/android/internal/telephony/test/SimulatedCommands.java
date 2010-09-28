@@ -1524,4 +1524,8 @@ public final class SimulatedCommands extends BaseCommands
     }
 
     public boolean needsOldRilFeature(String feature) { return false; }
+
+    public void getDataCallProfile(int appType, Message response){
+        unimplemented(response);
+    }
 }
