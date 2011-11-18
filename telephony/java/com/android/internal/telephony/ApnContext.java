@@ -35,6 +35,8 @@ public class ApnContext {
 
     private final String mApnType;
 
+    private final int mPriority;
+
     private DataConnectionTracker.State mState;
 
     private ArrayList<DataProfile> mWaitingApns = null;
@@ -64,6 +66,7 @@ public class ApnContext {
 
     public ApnContext(String apnType, String logTag) {
         mApnType = apnType;
+        mPriority = DataConnectionTracker.mApnPriorities.get(apnType);
         mState = DataConnectionTracker.State.IDLE;
         setReason(Phone.REASON_DATA_ENABLED);
         setRetryCount(0);
@@ -148,6 +151,22 @@ public class ApnContext {
 
     public synchronized ArrayList<DataProfile> getWaitingApns() {
         return mWaitingApns;
+    }
+
+    public synchronized int getPriority() {
+        return mPriority;
+    }
+
+    public synchronized boolean isHigherPriority(ApnContext context) {
+        return this.mPriority > context.getPriority();
+    }
+
+    public synchronized boolean isLowerPriority(ApnContext context) {
+        return this.mPriority < context.getPriority();
+    }
+
+    public synchronized boolean isEqualPriority(ApnContext context) {
+        return this.mPriority == context.getPriority();
     }
 
     public synchronized void setState(DataConnectionTracker.State s) {
