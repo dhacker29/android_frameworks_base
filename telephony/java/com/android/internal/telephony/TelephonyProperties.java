@@ -197,4 +197,9 @@ public interface TelephonyProperties
      * Set to true to indicates support for simultaneous voice and data.
      */
     static final String PROPERTY_SVDATA = "ro.config.svlte1x";
+
+    /**
+     * Indicates whether Out Of Service is considered as data call disconnect.
+     */
+    static final String PROPERTY_OOS_IS_DISCONNECT = "persist.telephony.oosisdc";
 }
