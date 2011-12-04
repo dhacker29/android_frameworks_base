@@ -675,4 +675,16 @@ class UsimDataDownloadCommands extends BaseCommands {
 
     public void getQosStatus (int qosId, Message result) {
     }
+
+    public void setSubscriptionMode (int subscriptionMode, Message result) {
+    }
+
+    @Override
+    public void setUiccSubscription(int slotId, int appIndex, int subId, int subStatus,
+            Message result) {
+    }
+
+    @Override
+    public void setDataSubscription (Message result) {
+    }
 }

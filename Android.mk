@@ -46,7 +46,8 @@ SECONDARY_FRAMEWORKS_SUBDIRS := \
         core/java/com/android/internal/widget/multiwaveview \
         core/java/com/android/internal/util/weather \
         core/java/com/android/internal/http/multipart \
-        core/tests/utillib/src/android/test
+        core/tests/utillib/src/android/test \
+        telephony/java/com/android/internal/telephony/msim
 
 
 
@@ -234,6 +235,11 @@ LOCAL_SRC_FILES += \
 	telephony/java/com/android/internal/telephony/ITelephonyRegistry.aidl \
 	telephony/java/com/android/internal/telephony/IIccPhoneBook.aidl \
 	telephony/java/com/android/internal/telephony/ISms.aidl \
+	telephony/java/com/android/internal/telephony/ITelephonyRegistryMSim.aidl \
+	telephony/java/com/android/internal/telephony/msim/IIccPhoneBookMSim.aidl \
+	telephony/java/com/android/internal/telephony/msim/IPhoneSubInfoMSim.aidl \
+	telephony/java/com/android/internal/telephony/msim/ISmsMSim.aidl \
+	telephony/java/com/android/internal/telephony/msim/ITelephonyMSim.aidl \
 	telephony/java/com/android/internal/telephony/IWapPushManager.aidl \
 	wifi/java/android/net/wifi/IWifiManager.aidl \
 	wifi/java/android/net/wifi/p2p/IWifiP2pManager.aidl \
