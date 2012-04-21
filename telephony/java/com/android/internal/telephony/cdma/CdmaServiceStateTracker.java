@@ -206,6 +206,8 @@ public class CdmaServiceStateTracker extends ServiceStateTracker {
 
     public void dispose() {
         checkCorrectThread();
+        log("ServiceStateTracker dispose");
+
         // Unregister for all events.
         cm.unregisterForRadioStateChanged(this);
         cm.unregisterForVoiceNetworkStateChanged(this);
