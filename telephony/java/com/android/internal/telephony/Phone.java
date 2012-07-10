@@ -209,19 +209,19 @@ public interface Phone {
     int NT_MODE_GSM_ONLY     = RILConstants.NETWORK_MODE_GSM_ONLY;
     int NT_MODE_WCDMA_ONLY   = RILConstants.NETWORK_MODE_WCDMA_ONLY;
     int NT_MODE_GSM_UMTS     = RILConstants.NETWORK_MODE_GSM_UMTS;
-    int NT_MODE_LTE_GSM_WCDMA= RILConstants.NETWORK_MODE_LTE_GSM_WCDMA;
 
     int NT_MODE_CDMA         = RILConstants.NETWORK_MODE_CDMA;
 
     int NT_MODE_CDMA_NO_EVDO = RILConstants.NETWORK_MODE_CDMA_NO_EVDO;
     int NT_MODE_EVDO_NO_CDMA = RILConstants.NETWORK_MODE_EVDO_NO_CDMA;
     int NT_MODE_GLOBAL       = RILConstants.NETWORK_MODE_GLOBAL;
-    int NT_MODE_LTE_CDMA_EVDO = RILConstants.NETWORK_MODE_LTE_CDMA_EVDO;
-    int NT_MODE_LTE_CMDA_EVDO_GSM_WCDMA = RILConstants.NETWORK_MODE_LTE_CMDA_EVDO_GSM_WCDMA;
 
-    int NT_MODE_LTE_ONLY     = RILConstants.NETWORK_MODE_LTE_ONLY;
-    int PREFERRED_NT_MODE    = RILConstants.PREFERRED_NETWORK_MODE;
-
+    int NT_MODE_LTE_CDMA_AND_EVDO        = RILConstants.NETWORK_MODE_LTE_CDMA_EVDO;
+    int NT_MODE_LTE_GSM_WCDMA            = RILConstants.NETWORK_MODE_LTE_GSM_WCDMA;
+    int NT_MODE_LTE_CMDA_EVDO_GSM_WCDMA  = RILConstants.NETWORK_MODE_LTE_CMDA_EVDO_GSM_WCDMA;
+    int NT_MODE_LTE_ONLY                 = RILConstants.NETWORK_MODE_LTE_ONLY;
+    int NT_MODE_LTE_WCDMA                = RILConstants.NETWORK_MODE_LTE_WCDMA;
+    int PREFERRED_NT_MODE                = RILConstants.PREFERRED_NETWORK_MODE;
 
     // Used for CDMA roaming mode
     static final int CDMA_RM_HOME        = 0;  // Home Networks only, as defined in PRL
