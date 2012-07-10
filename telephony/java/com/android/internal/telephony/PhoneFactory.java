@@ -29,6 +29,7 @@ import com.android.internal.telephony.cdma.CdmaSubscriptionSourceManager;
 import com.android.internal.telephony.gsm.GSMPhone;
 import com.android.internal.telephony.sip.SipPhone;
 import com.android.internal.telephony.sip.SipPhoneFactory;
+import com.android.internal.telephony.uicc.UiccController;
 
 import java.lang.reflect.Constructor;
 
@@ -154,6 +155,9 @@ public class PhoneFactory {
                     Log.wtf(LOG_TAG, "Unable to construct command interface", e);
                     throw new RuntimeException(e);
                 }
+
+                // Instantiate UiccController so that all other classes can just call getInstance()
+                UiccController.make(context, sCommandsInterface);
 
                 int phoneType = getPhoneType(networkMode);
                 if (phoneType == Phone.PHONE_TYPE_GSM) {
