@@ -23,9 +23,9 @@ import android.util.Log;
 import com.android.internal.telephony.EncodeException;
 import com.android.internal.telephony.GsmAlphabet;
 import com.android.internal.telephony.SimRegionCache;
-import com.android.internal.telephony.IccUtils;
 import com.android.internal.telephony.SmsHeader;
 import com.android.internal.telephony.SmsMessageBase;
+import com.android.internal.telephony.uicc.IccUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
