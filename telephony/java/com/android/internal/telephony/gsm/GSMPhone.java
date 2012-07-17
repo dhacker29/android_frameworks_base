@@ -1522,7 +1522,7 @@ public class GSMPhone extends PhoneBase {
 
     public boolean isCspPlmnEnabled() {
         IccRecords r = mIccRecords.get();
-        return (r != null) ? r.isCspPlmnEnabled() : false;
+        return (r != null) ? r.isCspPlmnEnabled() : true;
     }
 
     public boolean isManualNetSelAllowed() {
