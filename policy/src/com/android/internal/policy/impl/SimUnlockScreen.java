@@ -1,5 +1,9 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (c) 2012, Code Aurora Forum. All rights reserved
+ *
+ * Not a Contribution, Apache license notifications and license are retained
+ * for attribution purposes only.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +34,8 @@ import com.android.internal.telephony.ITelephony;
 import com.android.internal.telephony.Phone;
 import com.android.internal.widget.LockPatternUtils;
 
+import android.telephony.MSimTelephonyManager;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -51,35 +57,35 @@ public class SimUnlockScreen extends LinearLayout implements KeyguardScreen, Vie
 
     private boolean mSimCheckInProgress;
 
-    private static final int DIGIT_PRESS_WAKE_MILLIS = 5000;
+    protected static final int DIGIT_PRESS_WAKE_MILLIS = 5000;
 
-    private final KeyguardUpdateMonitor mUpdateMonitor;
-    private final KeyguardScreenCallback mCallback;
+    protected final KeyguardUpdateMonitor mUpdateMonitor;
+    protected final KeyguardScreenCallback mCallback;
 
-    private TextView mHeaderText;
-    private TextView mPinText;
+    protected TextView mHeaderText;
+    protected TextView mPinText;
 
-    private TextView mOkButton;
+    protected TextView mOkButton;
 
-    private View mBackSpaceButton;
+    protected View mBackSpaceButton;
 
     protected Context mContext;
 
-    private final int[] mEnteredPin = {0, 0, 0, 0, 0, 0, 0, 0};
-    private int mEnteredDigits = 0;
+    protected final int[] mEnteredPin = {0, 0, 0, 0, 0, 0, 0, 0};
+    protected int mEnteredDigits = 0;
 
     private Context mUiContext;
-    private ProgressDialog mSimUnlockProgressDialog = null;
+    protected ProgressDialog mSimUnlockProgressDialog = null;
 
-    private LockPatternUtils mLockPatternUtils;
+    protected LockPatternUtils mLockPatternUtils;
 
-    private int mCreationOrientation;
+    protected int mCreationOrientation;
 
-    private int mKeyboardHidden;
+    protected int mKeyboardHidden;
 
-    private KeyguardStatusViewManager mKeyguardStatusViewManager;
+    protected KeyguardStatusViewManager mKeyguardStatusViewManager;
 
-    private static final char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    protected static final char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
     private BroadcastReceiver mThemeChangeReceiver = new BroadcastReceiver() {
         @Override
@@ -100,15 +106,7 @@ public class SimUnlockScreen extends LinearLayout implements KeyguardScreen, Vie
         mCreationOrientation = configuration.orientation;
         mKeyboardHidden = configuration.hardKeyboardHidden;
         mLockPatternUtils = lockpatternutils;
-
-        LayoutInflater inflater = LayoutInflater.from(context);
-        if (mKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) {
-            inflater.inflate(R.layout.keyguard_screen_sim_pin_landscape, this, true);
-        } else {
-            inflater.inflate(R.layout.keyguard_screen_sim_pin_portrait, this, true);
-            new TouchInput();
-        }
-
+        layoutType(context);
         mHeaderText = (TextView) findViewById(R.id.headerText);
         mPinText = (TextView) findViewById(R.id.pinDisplay);
         mBackSpaceButton = findViewById(R.id.backspace);
@@ -121,10 +119,25 @@ public class SimUnlockScreen extends LinearLayout implements KeyguardScreen, Vie
 
         mOkButton.setOnClickListener(this);
 
-        mKeyguardStatusViewManager = new KeyguardStatusViewManager(this, updateMonitor,
-                lockpatternutils, callback, false);
+        if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
+            mKeyguardStatusViewManager = new MSimKeyguardStatusViewManager(this, updateMonitor,
+                    lockpatternutils, callback, true);
+        } else {
+            mKeyguardStatusViewManager = new KeyguardStatusViewManager(this, updateMonitor,
+                    lockpatternutils, callback, true);
+        }
 
         setFocusableInTouchMode(true);
+    }
+
+    protected void layoutType(Context context) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        if (mKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) {
+            inflater.inflate(R.layout.keyguard_screen_sim_pin_landscape, this, true);
+        } else {
+            inflater.inflate(R.layout.keyguard_screen_sim_pin_portrait, this, true);
+            new TouchInput();
+        }
     }
 
     /** {@inheritDoc} */
@@ -218,12 +231,11 @@ public class SimUnlockScreen extends LinearLayout implements KeyguardScreen, Vie
         }
     }
 
-    private Dialog getSimUnlockProgressDialog() {
+    protected Dialog getSimUnlockProgressDialog() {
         if (mUiContext == null && mSimUnlockProgressDialog != null) {
             mSimUnlockProgressDialog.dismiss();
             mSimUnlockProgressDialog = null;
         }
-
         if (mSimUnlockProgressDialog == null) {
             mUiContext = ThemeUtils.createUiContext(mContext);
             ThemeUtils.registerThemeChangeReceiver(mContext, mThemeChangeReceiver);
@@ -241,7 +253,7 @@ public class SimUnlockScreen extends LinearLayout implements KeyguardScreen, Vie
         return mSimUnlockProgressDialog;
     }
 
-    private void checkPin() {
+    protected void checkPin() {
 
         // make sure that the pin is at least 4 digits long.
         if (mEnteredDigits < 4) {
@@ -356,7 +368,7 @@ public class SimUnlockScreen extends LinearLayout implements KeyguardScreen, Vie
         return false;
     }
 
-    private void reportDigit(int digit) {
+    protected void reportDigit(int digit) {
         if (mEnteredDigits == 0) {
             mPinText.setText("");
         }
@@ -393,20 +405,20 @@ public class SimUnlockScreen extends LinearLayout implements KeyguardScreen, Vie
      * Helper class to handle input from touch dialer.  Only relevant when
      * the keyboard is shut.
      */
-    private class TouchInput implements View.OnClickListener {
-        private TextView mZero;
-        private TextView mOne;
-        private TextView mTwo;
-        private TextView mThree;
-        private TextView mFour;
-        private TextView mFive;
-        private TextView mSix;
-        private TextView mSeven;
-        private TextView mEight;
-        private TextView mNine;
-        private TextView mCancelButton;
+    protected class TouchInput implements View.OnClickListener {
+        protected TextView mZero;
+        protected TextView mOne;
+        protected TextView mTwo;
+        protected TextView mThree;
+        protected TextView mFour;
+        protected TextView mFive;
+        protected TextView mSix;
+        protected TextView mSeven;
+        protected TextView mEight;
+        protected TextView mNine;
+        protected TextView mCancelButton;
 
-        private TouchInput() {
+        protected TouchInput() {
             mZero = (TextView) findViewById(R.id.zero);
             mOne = (TextView) findViewById(R.id.one);
             mTwo = (TextView) findViewById(R.id.two);
@@ -458,7 +470,7 @@ public class SimUnlockScreen extends LinearLayout implements KeyguardScreen, Vie
             }
         }
 
-        private int checkDigit(View v) {
+        protected int checkDigit(View v) {
             int digit = -1;
             if (v == mZero) {
                 digit = 0;
