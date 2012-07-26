@@ -34,15 +34,19 @@ framework_res_source_path := APPS/framework-res_intermediates/src
 SECONDARY_FRAMEWORKS_SUBDIRS := \
         core/java/android/test \
         core/java/android/gesture \
+        core/java/android/hardware/fmradio \
         core/java/android/speech/srec \
         media/java/android/media/videoeditor \
         media/java/android/media/audiofx \
         media/mca/effect/java/android/media/effect \
         media/mca/effect/java/android/media/effect/effects \
+        media/mca/filterfw \
+        media/mca/filterpacks \
         voip/java/com/android/server/sip \
         core/java/com/android/internal/widget/multiwaveview \
         core/java/com/android/internal/util/weather \
-        core/java/com/android/internal/http/multipart
+        core/java/com/android/internal/http/multipart \
+        core/tests/utillib/src/android/test
 
 
 
