@@ -2041,8 +2041,13 @@ public class PhoneStatusBar extends BaseStatusBar {
         if (mLightsOutAnimation == null) {
             final View notifications = mStatusBarView.findViewById(R.id.notification_icon_area);
             final View systemIcons = mStatusBarView.findViewById(R.id.statusIcons);
-            final View signal = mStatusBarView.findViewById(R.id.signal_cluster);
             final View signalText = mStatusBarView.findViewById(R.id.signal_cluster_text);
+            final View signal;
+            if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
+                signal = mStatusBarView.findViewById(R.id.msim_signal_cluster);
+            } else {
+                signal = mStatusBarView.findViewById(R.id.signal_cluster);
+            }
             final View battery = mStatusBarView.findViewById(R.id.battery);
             final View batteryText = mStatusBarView.findViewById(R.id.battery_text);
 
