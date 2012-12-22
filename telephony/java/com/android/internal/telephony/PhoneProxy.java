@@ -1038,6 +1038,10 @@ public class PhoneProxy extends Handler implements Phone {
         mCommandsInterface = null;
     }
 
+    public void setTransmitPower(int powerLevel, Message onCompleted) {
+        mCommandsInterface.setTransmitPower(powerLevel, onCompleted);
+    }
+
     public void setDataReadinessChecks(
             boolean checkConnectivity, boolean checkSubscription, boolean tryDataCalls) {
         mActivePhone.setDataReadinessChecks(
