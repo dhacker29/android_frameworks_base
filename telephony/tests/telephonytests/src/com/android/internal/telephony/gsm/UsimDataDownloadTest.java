@@ -141,5 +141,4 @@ public class UsimDataDownloadTest extends AndroidTestCase {
         mHandler.startDataDownload(message);
         mCm.assertExpectedMethodsCalled();
     }
-
 }
