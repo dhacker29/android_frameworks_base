@@ -26,6 +26,10 @@ import com.android.internal.telephony.RILConstants;
 import java.util.Collections;
 import android.telephony.PhoneNumberUtils;
 
+import com.android.internal.telephony.uicc.IccCardApplicationStatus;
+import com.android.internal.telephony.uicc.IccCardStatus;
+import com.android.internal.telephony.uicc.IccUtils;
+
 import java.util.ArrayList;
 
 /**

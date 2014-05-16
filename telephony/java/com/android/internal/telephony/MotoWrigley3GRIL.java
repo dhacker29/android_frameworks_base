@@ -23,6 +23,10 @@ import android.util.Log;
 
 import com.android.internal.telephony.gsm.SuppServiceNotification;
 
+import com.android.internal.telephony.uicc.IccCardApplicationStatus;
+import com.android.internal.telephony.uicc.IccCardStatus;
+import com.android.internal.telephony.uicc.IccUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 

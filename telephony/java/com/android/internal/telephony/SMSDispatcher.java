@@ -56,6 +56,7 @@ import android.view.WindowManager;
 
 import com.android.internal.R;
 import com.android.internal.telephony.SmsMessageBase.TextEncodingDetails;
+import com.android.internal.telephony.uicc.IccUtils;
 import com.android.internal.util.HexDump;
 
 import java.io.ByteArrayOutputStream;

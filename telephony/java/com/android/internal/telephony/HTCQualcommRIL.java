@@ -27,6 +27,9 @@ import android.os.Parcel;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.internal.telephony.uicc.IccCardApplicationStatus;
+import com.android.internal.telephony.uicc.IccCardStatus;
+
 import java.util.ArrayList;
 
 /**
@@ -49,7 +52,7 @@ public class HTCQualcommRIL extends QualcommSharedRIL implements CommandsInterfa
     @Override
     protected Object
     responseIccCardStatus(Parcel p) {
-        IccCardApplication ca;
+        IccCardApplicationStatus ca;
 
         // use old needsOldRilFeature method for feature. it would be redundant to make
         // a new method just for naming sake.
@@ -59,11 +62,11 @@ public class HTCQualcommRIL extends QualcommSharedRIL implements CommandsInterfa
         IccCardStatus status = new IccCardStatus();
         status.setCardState(p.readInt());
         status.setUniversalPinState(p.readInt());
-        status.setGsmUmtsSubscriptionAppIndex(p.readInt());
-        status.setCdmaSubscriptionAppIndex(p.readInt());
+        status.mGsmUmtsSubscriptionAppIndex = p.readInt();
+        status.mCdmaSubscriptionAppIndex = p.readInt();
 
         if (!oldRil)
-            status.setImsSubscriptionAppIndex(p.readInt());
+            status.mImsSubscriptionAppIndex = p.readInt();
 
         int numApplications = p.readInt();
 
@@ -71,18 +74,18 @@ public class HTCQualcommRIL extends QualcommSharedRIL implements CommandsInterfa
         if (numApplications > IccCardStatus.CARD_MAX_APPS) {
             numApplications = IccCardStatus.CARD_MAX_APPS;
         }
-        status.setNumApplications(numApplications);
+        status.mApplications = new IccCardApplicationStatus[numApplications];
 
-        for (int i = 0 ; i < numApplications ; i++) {
-            ca = new IccCardApplication();
+        for (int i = 0; i < numApplications; i++) {
+            ca = new IccCardApplicationStatus();
             ca.app_type       = ca.AppTypeFromRILInt(p.readInt());
             ca.app_state      = ca.AppStateFromRILInt(p.readInt());
             ca.perso_substate = ca.PersoSubstateFromRILInt(p.readInt());
-            if ((ca.app_state == IccCardApplication.AppState.APPSTATE_SUBSCRIPTION_PERSO) &&
-                ((ca.perso_substate == IccCardApplication.PersoSubState.PERSOSUBSTATE_READY) ||
-                (ca.perso_substate == IccCardApplication.PersoSubState.PERSOSUBSTATE_UNKNOWN))) {
+            if ((ca.app_state == IccCardApplicationStatus.AppState.APPSTATE_SUBSCRIPTION_PERSO) &&
+                ((ca.perso_substate == IccCardApplicationStatus.PersoSubState.PERSOSUBSTATE_READY) ||
+                (ca.perso_substate == IccCardApplicationStatus.PersoSubState.PERSOSUBSTATE_UNKNOWN))) {
                 // ridiculous HTC hack
-                ca.app_state = IccCardApplication.AppState.APPSTATE_UNKNOWN;
+                ca.app_state = IccCardApplicationStatus.AppState.APPSTATE_UNKNOWN;
                 Log.d(LOG_TAG, "ca.app_state == AppState.APPSTATE_SUBSCRIPTION_PERSO");
                 Log.d(LOG_TAG, "ca.perso_substate == PersoSubState.PERSOSUBSTATE_READY");
             }
@@ -91,7 +94,7 @@ public class HTCQualcommRIL extends QualcommSharedRIL implements CommandsInterfa
             ca.pin1_replaced  = p.readInt();
             ca.pin1           = ca.PinStateFromRILInt(p.readInt());
             ca.pin2           = ca.PinStateFromRILInt(p.readInt());
-            status.addApplication(ca);
+            status.mApplications[i] = ca;
         }
 
         // use ril response to determine subscription source
@@ -100,18 +103,18 @@ public class HTCQualcommRIL extends QualcommSharedRIL implements CommandsInterfa
 
         int appIndex = -1;
         if (mPhoneType == RILConstants.CDMA_PHONE && !skipCdmaSubcription) {
-            appIndex = status.getCdmaSubscriptionAppIndex();
+            appIndex = status.mCdmaSubscriptionAppIndex;
             Log.d(LOG_TAG, "This is a CDMA PHONE " + appIndex);
         } else {
-            appIndex = status.getGsmUmtsSubscriptionAppIndex();
+            appIndex = status.mGsmUmtsSubscriptionAppIndex;
             Log.d(LOG_TAG, "This is a GSM PHONE " + appIndex);
         }
 
         if (numApplications > 0) {
-            IccCardApplication application = status.getApplication(appIndex);
+            IccCardApplicationStatus application = status.mApplications[appIndex];
             mAid = application.aid;
             mUSIM = application.app_type
-                      == IccCardApplication.AppType.APPTYPE_USIM;
+                      == IccCardApplicationStatus.AppType.APPTYPE_USIM;
             mSetPreferredNetworkType = mPreferredNetworkType;
 
             if (TextUtils.isEmpty(mAid))

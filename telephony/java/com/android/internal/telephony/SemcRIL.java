@@ -30,6 +30,10 @@ import android.os.SystemProperties;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.internal.telephony.uicc.IccCardApplicationStatus;
+import com.android.internal.telephony.uicc.IccCardStatus;
+import com.android.internal.telephony.uicc.IccUtils;
+
 import java.util.ArrayList;
 
 /**
@@ -57,24 +61,24 @@ public class SemcRIL extends RIL implements CommandsInterface {
     @Override
     protected Object
     responseIccCardStatus(Parcel p) {
-        IccCardApplication ca;
+        IccCardApplicationStatus ca;
 
         IccCardStatus status = new IccCardStatus();
         status.setCardState(p.readInt());
         status.setUniversalPinState(p.readInt());
-        status.setGsmUmtsSubscriptionAppIndex(p.readInt());
-        status.setCdmaSubscriptionAppIndex(p.readInt());
-        status.setImsSubscriptionAppIndex(p.readInt());
+        status.mGsmUmtsSubscriptionAppIndex = p.readInt();
+        status.mCdmaSubscriptionAppIndex = p.readInt();
+        status.mImsSubscriptionAppIndex = p.readInt();
 
         int numApplications = p.readInt();
         // limit to maximum allowed applications
         if (numApplications > IccCardStatus.CARD_MAX_APPS) {
             numApplications = IccCardStatus.CARD_MAX_APPS;
         }
-        status.setNumApplications(numApplications);
+        status.mApplications = new IccCardApplicationStatus[numApplications];
 
-        for (int i = 0 ; i < numApplications ; i++) {
-            ca = new IccCardApplication();
+        for (int i = 0; i < numApplications; i++) {
+            ca = new IccCardApplicationStatus();
             ca.app_type       = ca.AppTypeFromRILInt(p.readInt());
             ca.app_state      = ca.AppStateFromRILInt(p.readInt());
             ca.perso_substate = ca.PersoSubstateFromRILInt(p.readInt());
@@ -83,25 +87,24 @@ public class SemcRIL extends RIL implements CommandsInterface {
             ca.pin1_replaced  = p.readInt();
             ca.pin1           = ca.PinStateFromRILInt(p.readInt());
             ca.pin2           = ca.PinStateFromRILInt(p.readInt());
-            status.addApplication(ca);
+            status.mApplications[i] = ca;
+        }
+        int appIndex = -1;
+        if (mPhoneType == RILConstants.CDMA_PHONE) {
+            appIndex = status.mCdmaSubscriptionAppIndex;
+            Log.d(LOG_TAG, "This is a CDMA PHONE " + appIndex);
+        } else {
+            appIndex = status.mGsmUmtsSubscriptionAppIndex;
+            Log.d(LOG_TAG, "This is a GSM PHONE " + appIndex);
         }
 
-        updateIccType(status);
-        return status;
-    }
-
-    private void updateIccType (IccCardStatus status) {
-        int appType;
-        if (status.getNumApplications() > 0) {
-            if (mPhoneType == RILConstants.CDMA_PHONE)
-                appType = status.getCdmaSubscriptionAppIndex();
-            else
-                appType = status.getGsmUmtsSubscriptionAppIndex();
-
-            IccCardApplication application = status.getApplication(appType);
+        if (numApplications > 0) {
+            IccCardApplicationStatus application = status.mApplications[appIndex];
             mAid = application.aid;
             Log.d(LOG_TAG, "Picked default AID: " + mAid);
         }
+
+        return status;
     }
 
     @Override
@@ -363,7 +366,7 @@ public class SemcRIL extends RIL implements CommandsInterface {
                         break;
                     }
                     IccCardStatus status = (IccCardStatus) asyncResult.result;
-                    if (status.getNumApplications() == 0) {
+                    if (status.mApplications == null || status.mApplications.length == 0) {
                         if (!mRil.getRadioState().isOn()) {
                             break;
                         }
@@ -372,16 +375,16 @@ public class SemcRIL extends RIL implements CommandsInterface {
                     } else {
                         int appIndex = -1;
                         if (mPhoneType == RILConstants.CDMA_PHONE) {
-                            appIndex = status.getCdmaSubscriptionAppIndex();
+                            appIndex = status.mCdmaSubscriptionAppIndex;
                             Log.d(LOG_TAG, "This is a CDMA PHONE " + appIndex);
                         } else {
-                            appIndex = status.getGsmUmtsSubscriptionAppIndex();
+                            appIndex = status.mGsmUmtsSubscriptionAppIndex;
                             Log.d(LOG_TAG, "This is a GSM PHONE " + appIndex);
                         }
 
-                        IccCardApplication application = status.getApplication(appIndex);
-                        IccCardApplication.AppState app_state = application.app_state;
-                        IccCardApplication.AppType app_type = application.app_type;
+                        IccCardApplicationStatus application = status.mApplications[appIndex];
+                        IccCardApplicationStatus.AppState app_state = application.app_state;
+                        IccCardApplicationStatus.AppType app_type = application.app_type;
                         switch (app_state) {
                             case APPSTATE_PIN:
                             case APPSTATE_PUK:
