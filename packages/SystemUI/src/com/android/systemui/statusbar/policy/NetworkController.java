@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 The Android Open Source Project
- * Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
  *
  * Not a Contribution, Apache license notifications and license are retained
  * for attribution purposes only
@@ -240,10 +240,6 @@ public class NetworkController extends BroadcastReceiver {
         return mHasMobileDataFeature;
     }
 
-    public boolean isEmergencyOnly() {
-        return (mServiceState != null && mServiceState.isEmergencyOnly());
-    }
-
     protected void createWifiHandler() {
         // wifi
         mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
@@ -264,6 +260,10 @@ public class NetworkController extends BroadcastReceiver {
                         | PhoneStateListener.LISTEN_CALL_STATE
                         | PhoneStateListener.LISTEN_DATA_CONNECTION_STATE
                         | PhoneStateListener.LISTEN_DATA_ACTIVITY);
+    }
+
+    public boolean isEmergencyOnly() {
+        return (mServiceState != null && mServiceState.isEmergencyOnly());
     }
 
     public void addPhoneSignalIconView(ImageView v) {

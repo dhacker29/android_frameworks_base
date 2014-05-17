@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2010 The Android Open Source Project
- * Copyright (c) 2012, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2012, The Linux Foundation. All rights reserved.
  *
  * Not a Contribution, Apache license notifications and license are retained
  * for attribution purposes only
@@ -213,6 +213,11 @@ public class MSimNetworkController extends NetworkController {
                             | PhoneStateListener.LISTEN_DATA_CONNECTION_STATE
                             | PhoneStateListener.LISTEN_DATA_ACTIVITY);
         }
+    }
+
+    public boolean isEmergencyOnly(int subscription) {
+        return (mMSimServiceState[subscription] != null &&
+                mMSimServiceState[subscription].isEmergencyOnly());
     }
 
     public void addSignalCluster(MSimSignalCluster cluster, int subscription) {
@@ -817,6 +822,8 @@ public class MSimNetworkController extends NetworkController {
         String mobileLabel = "";
         String wifiLabel = "";
         int N;
+        final boolean emergencyOnly = isEmergencyOnly(subscription);
+
         Slog.d(TAG,"refreshViews subscription =" + subscription + "mMSimDataConnected ="
                 + mMSimDataConnected[subscription]);
         Slog.d(TAG,"refreshViews mMSimDataActivity =" + mMSimDataActivity[subscription]);
@@ -834,8 +841,8 @@ public class MSimNetworkController extends NetworkController {
 
             if (mMSimDataConnected[subscription]) {
                 mobileLabel = mMSimNetworkName[subscription];
-            } else if (mConnected) {
-                if (hasService(subscription)) {
+            } else if (mConnected || emergencyOnly) {
+                if (hasService(subscription) || emergencyOnly) {
                     mobileLabel = mMSimNetworkName[subscription];
                 } else {
                     mobileLabel = "";
@@ -993,6 +1000,7 @@ public class MSimNetworkController extends NetworkController {
                     + "/" + getResourceName(mMSimcombinedSignalIconId[subscription])
                     + " mMSimcombinedActivityIconId=0x" + Integer.toHexString
                             (mMSimcombinedActivityIconId[subscription])
+                    + " emergencyOnly=" + emergencyOnly
                     + " mAirplaneMode=" + mAirplaneMode
                     + " mMSimDataActivity=" + mMSimDataActivity[subscription]
                     + " mMSimPhoneSignalIconId=0x" + Integer.toHexString
